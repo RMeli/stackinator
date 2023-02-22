@@ -33,7 +33,7 @@ def configure_logging(logfile):
     root_logger.addHandler(fh)
 
 
-def log_header(args):
+def log_header(args) -> float:
     a = 1
     root_logger.info("Stackinator")
     root_logger.info(f"  recipe path: {args.recipe}")
