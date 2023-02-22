@@ -24,7 +24,7 @@ def configure_logging(logfile):
     ch = logging.StreamHandler(stream=sys.stdout)
     ch.setLevel(logging.INFO)
     ch.setFormatter(logging.Formatter("%(message)s"))
-     root_logger.addHandler(ch)
+    root_logger.addHandler(ch)
 
     # create log file handler and set level to debug
     fh = logging.FileHandler(logfile)  # , mode='w')
