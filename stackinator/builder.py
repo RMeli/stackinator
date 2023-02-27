@@ -140,7 +140,9 @@ class Builder:
             # skip copying mirrors.yaml - this is done in the next step only if
             # mirrors have been enabled and the recipe did not provide a mirror
             # configuration
-            if f_config.name in ["mirrors.yaml"]:
+            # skip copying repos/ directory - this is done later
+            # after setting up CSCS repo (with cray-mpich)
+            if f_config.name in ["mirrors.yaml", "repo/"]:
                 continue
 
             # construct full file path
@@ -191,6 +193,22 @@ class Builder:
                 )
             )
             f.write("\n")
+
+        # Add user-defined recipes to the repo
+        user_repo_path = recipe.path / "repo"
+        if user_repo_path.exists() and user_repo_path.is_dir():
+            # If user provides repo.yaml, use this instead of repos_yaml_templae
+            user_repo_yaml = user_repo_path / "repo.yaml"
+            if user_repo_yaml.exists():
+                shutil.copy(user_repo_yaml, repo_dst / "repo.yaml")
+
+            # Copy user-provided recipes into repo
+            user_repo_packages = user_repo_path / "packages"
+            for user_recipe_dir in user_repo_packages.iterdir():
+                if user_recipe_dir.is_dir():  # FIXME: iterdir() yelds files too
+                    shutil.copytree(
+                        user_recipe_dir, repo_dst / "packages" / user_recipe_dir.name
+                    )
 
         # Generate the makefile and spack.yaml files that describe the compilers
         compilers = recipe.generate_compilers()
